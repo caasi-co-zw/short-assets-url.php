@@ -14,29 +14,30 @@
  */
 @define('WP_SHORTEN_ASSETS_URL', false);
 
-/**
- * Returns the url for the specified directory
- * @param string $dir
- * @return string
- */
-function get_dir(string $dir) {
-    $theme = wp_get_theme();
-    return sprintf('wp-content/themes/%s/assets/%s/$1', $theme->get('Name'), $dir);
-}
 
 /**
  * Shortens the urls
  */
 
-function init() {
+function short_assets_url_plugin() {
+    /**
+     * Returns the url for the specified directory
+     * @param string $dir
+     * @return string
+     */
+    function get_dir(string $dir) {
+        $theme = wp_get_theme();
+        return sprintf('wp-content/themes/%s/assets/%s/%s', $theme->get('TextDomain'), $dir, '$1');
+    }
 
     global $wp_rewrite;
-    $new_non_wp_rules = array(
-        'css/(.*)'       => get_dir('css'),
-        'js/(.*)'        => get_dir('js'),
-        'img/(.*)'    => get_dir('image'),
+
+    $rules = array(
+        'js/(.*)'     => get_dir('js'),
+        'css/(.*)'    => get_dir('css'),
+        'img/(.*)'    => get_dir('img'),
     );
-    $wp_rewrite->non_wp_rules += $new_non_wp_rules;
+    $wp_rewrite->non_wp_rules += $rules;
 }
 
-add_action('generate_rewrite_rules', 'init');
+add_action('generate_rewrite_rules', 'short_assets_url_plugin');
