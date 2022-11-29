@@ -31,16 +31,25 @@ function short_assets_url_plugin() {
         if (!$dir) {
             return sprintf('wp-content/themes/%s/', $theme->get('TextDomain'));
         }
+        $dir = $dir . (dir_exists(get_dir('assets/')) ? 'assets/' : '');
         return sprintf('%s/%s/%s', get_dir(null), $dir, '$1');
     }
 
+    /**
+     * Returns true if the specified folder exists.
+     *
+     * Is used to determine if theme should get assets from an assets folder or not.
+     * @return bool
+     */
+    function dir_exists(string $dir) {
+        return file_exists($dir) && is_dir($dir);
+    }
     global $wp_rewrite;
 
     $rules = array(
         'js/(.*)'     => get_dir('js'),
         'css/(.*)'    => get_dir('css'),
         'img/(.*)'    => get_dir('img'),
-        // '/(.*)'    => get_dir(null),
     );
     $wp_rewrite->non_wp_rules += $rules;
 }
