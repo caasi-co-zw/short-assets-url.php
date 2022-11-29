@@ -25,9 +25,13 @@ function short_assets_url_plugin() {
      * @param string $dir
      * @return string
      */
-    function get_dir(string $dir) {
+    function get_dir(?string $dir) {
         $theme = wp_get_theme();
-        return sprintf('wp-content/themes/%s/assets/%s/%s', $theme->get('TextDomain'), $dir, '$1');
+
+        if (!$dir) {
+            return sprintf('wp-content/themes/%s/', $theme->get('TextDomain'));
+        }
+        return sprintf('%s/%s/%s', get_dir(null), $dir, '$1');
     }
 
     global $wp_rewrite;
@@ -36,6 +40,7 @@ function short_assets_url_plugin() {
         'js/(.*)'     => get_dir('js'),
         'css/(.*)'    => get_dir('css'),
         'img/(.*)'    => get_dir('img'),
+        // '/(.*)'    => get_dir(null),
     );
     $wp_rewrite->non_wp_rules += $rules;
 }
